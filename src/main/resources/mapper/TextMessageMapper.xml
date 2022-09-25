@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zys.websocketchatroom.mapper.TextMessageMapper">
+
+
+    <select id="getFriendMessage" resultType="com.zys.websocketchatroom.pojo.TextMessage" parameterType="String">
+        select * from textmessage where `from` = #{idone} and `to` = #{idtwo}
+        union all
+        select * from textmessage where `from` = #{idtwo} and `to` = #{idone}
+    </select>
+
+    <select id="getGroupMessage" resultType="com.zys.websocketchatroom.pojo.TextMessage" parameterType="String">
+        select * from textmessage where `to` = #{groupid}
+    </select>
+
+    <insert id="insert"  parameterType="com.zys.websocketchatroom.pojo.TextMessage">
+        insert into textmessage values(#{from}, #{to}, #{content}, #{isgroup}, #{create_time}, #{type})
+    </insert>
+
+</mapper>

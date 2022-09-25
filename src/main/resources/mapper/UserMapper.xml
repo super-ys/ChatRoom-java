@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zys.websocketchatroom.mapper.UserMapper">
+
+    <select id="count" resultType="int">
+        select count(*) from user
+    </select>
+
+    <select id="login" resultType="com.zys.websocketchatroom.pojo.User" parameterType="String">
+
+        select userid, username, sex, avatar from user where userid = #{userid} and password = #{password}
+
+    </select>
+
+    <insert id="register"  parameterType="com.zys.websocketchatroom.pojo.User">
+        insert into user values(#{userid}, #{password}, #{username}, #{sex}, #{avatar})
+    </insert>
+
+    <select id="queryById" resultType="com.zys.websocketchatroom.pojo.User" parameterType="String">
+        select username, avatar, sex from user where userid = #{userid}
+    </select>
+
+
+
+</mapper>
