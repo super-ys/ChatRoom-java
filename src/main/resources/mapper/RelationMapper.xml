@@ -5,6 +5,12 @@
 <mapper namespace="com.zys.websocketchatroom.mapper.RelationMapper">
 
 
+    <select id="isFriend" parameterType="String" resultType="int">
+        select count(*) from relationship where user_id = #{userid} and friend_id = #{friend_id}
+        union all
+        select count(*) from relationship where user_id = #{friend_id} and friend_id = #{userid}
+    </select>
+
     <select id="queryFriendsById" resultType="com.zys.websocketchatroom.pojo.User" parameterType="String">
 
         select u.userid, u.username, u.avatar from user u where u.userid in (
@@ -23,6 +29,10 @@
         select g.group_id, g.group_name, g.group_head,g.group_count from `group` g where g.group_id in (
             select group_id from groupship where user_id = #{userid}
             )
+    </select>
+
+    <select id="queryMembers" resultType="list" parameterType="String">
+        select user_id from groupship where group_id = #{group_id}
     </select>
 
     <insert id="insertGroup" parameterType="String">

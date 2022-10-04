@@ -17,11 +17,20 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/login")
-    public User login(@RequestParam("userid") String userid,
+    public Map<String, Object> login(@RequestParam("userid") String userid,
                       @RequestParam("password") String password){
+        Map<String, Object> result = new HashMap<>();
         System.out.println(userid+ "----" + password);
-       User user = userService.login(userid, password);
-       return user;
+        try{
+            User user = userService.login(userid, password);
+            result.put("code", "200");
+            result.put("msg", "登录成功");
+            result.put("data", user);
+        }catch (Exception e){
+            result.put("code", "400");
+            result.put("msg", "登录失败");
+        }
+       return result;
     }
 
     @PostMapping("/register")

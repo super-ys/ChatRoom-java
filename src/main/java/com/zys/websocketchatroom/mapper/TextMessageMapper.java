@@ -13,7 +13,7 @@ public interface TextMessageMapper {
     // 获取历史消息 与好友的消息
     List<TextMessage> getFriendMessage(String idone, String idtwo);
 
-    // 获取历史纤细 与群的历史消息
+    // 获取历史信息 与群的历史消息
     List<TextMessage> getGroupMessage(String groupid);
 
     // 增加一条信息

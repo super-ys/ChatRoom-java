@@ -12,6 +12,10 @@ import java.util.List;
 @Repository
 public interface RelationMapper {
 
+
+    // 查询好友是否存在
+    int isFriend(String userid, String friend_id);
+
     // 查询好友
     List<User> queryFriendsById(String userid);
 
@@ -21,6 +25,8 @@ public interface RelationMapper {
     // 查询群
     List<Group> queryGroupById(String userid);
 
+    // 查询群成员
+    List queryMembers(String group_id);
     // 添加群
     int insertGroup(String groupid, String userid);
 

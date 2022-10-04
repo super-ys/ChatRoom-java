@@ -5,8 +5,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.zys.websocketchatroom.pojo.TextMessage;
+import com.zys.websocketchatroom.service.RelationService;
+import com.zys.websocketchatroom.service.TextMessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -21,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 注册成一个 websocket 服务
  */
-@ServerEndpoint(value = "/imserver/{username}")
+@ServerEndpoint(value = "/chatserver/{userid}")
 @Component
 public class WebSocketServer {
     private static final Logger log = LoggerFactory.getLogger(WebSocketServer.class);
@@ -29,14 +33,17 @@ public class WebSocketServer {
     // 记录在线用户
     public static final Map<String, Session> onlineUsers = new ConcurrentHashMap<>();
 
-
+    @Autowired
+    private RelationService relationService;
+    @Autowired
+    private TextMessageService messageService;
     /**
      * 建立链接调用的方法
      * @param session
      * @param userid
      */
     @OnOpen
-    public void onOpen(Session session, @PathParam("username") String userid){
+    public void onOpen(Session session, @PathParam("userid") String userid){
         // 将用户加入到 map 中 以用户名为主键
         onlineUsers.put(userid, session);
 
@@ -60,7 +67,7 @@ public class WebSocketServer {
      * @Param username
      */
     @OnClose
-    public void onClose(Session session, @PathParam("username") String username){
+    public void onClose(Session session, @PathParam("userid") String username){
         onlineUsers.remove(username);
         log.info("有一个链接关闭，移除 username={}的用户session，当前在线人数为：{}", username, onlineUsers.size());
     }
@@ -72,13 +79,13 @@ public class WebSocketServer {
      * @param username
      */
     @OnMessage
-    public void onMessage(String message, Session session, @PathParam("username") String username){
+    public void onMessage(String message, Session session, @PathParam("userid") String username){
         log.info("服务端收到用户username={}的消息：{}", username, message);
         JSONObject object = JSON.parseObject(message);
         if("true".equals(object.getString("isGroup"))){
             String gruop_id = object.getString("to");
             //  TODO 查询表 Groupship, 查询出群成员
-            List<String> users = new ArrayList<>();
+            List<String> users = relationService.queryMembers(gruop_id);
             // 找到群 id 为 group_id 的所有成员
             List<Session> sessions = new ArrayList<>();
             for(String user : users){
@@ -113,6 +120,13 @@ public class WebSocketServer {
                 synchronized (session){
                     log.info("服务端给客户端[{}]发送信息{}", session.getId(), message);
                     session.getBasicRemote().sendText(message);
+                    TextMessage textMessage = (TextMessage) JSON.parse(message);
+                    Boolean aBoolean = messageService.addMessage(textMessage);
+                    if(aBoolean){
+                        System.out.println("消息存储成功");
+                    }else{
+                        System.out.println("消息存储失败");
+                    }
                 }
             }catch (Exception e){
                 log.info("发送组播失败");
@@ -123,7 +137,6 @@ public class WebSocketServer {
         // TODO 存储信息
 
     }
-
 
 
     // 给多个用户发送信息
