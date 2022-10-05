@@ -15,7 +15,8 @@ public class Group {
 
     public String group_id;
     public String group_name;
-    public String gruop_head;
+    public String group_head;
     public String group_owner;
+    public String group_count;
 
 }

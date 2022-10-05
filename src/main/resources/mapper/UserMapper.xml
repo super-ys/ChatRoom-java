@@ -19,7 +19,7 @@
     </insert>
 
     <select id="queryById" resultType="com.zys.websocketchatroom.pojo.User" parameterType="String">
-        select username, avatar, sex from user where userid = #{userid}
+        select userid, username, avatar, sex from user where userid = #{userid}
     </select>
 
 

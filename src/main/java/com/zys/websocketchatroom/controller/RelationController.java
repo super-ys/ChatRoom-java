@@ -18,9 +18,9 @@ public class RelationController {
     @Autowired
     private RelationService relationService;
 
-    @PostMapping("/addfriend/{userid}/{friendid}")
-    public Map<String, Object> addFriends(@RequestParam("userid") String user_id,
-                                          @RequestParam("friendid") String friend_id){
+    @PostMapping("/addfriend/{user_id}/{friend_id}")
+    public Map<String, Object> addFriends(@PathVariable String user_id,
+                                          @PathVariable String friend_id){
         Map<String, Object> result = new HashMap<>();
         try {
             if(!relationService.isFriend(user_id, friend_id)){
@@ -41,9 +41,9 @@ public class RelationController {
         return result;
     }
 
-    @PostMapping("/addgroup/{userid}/{groupid}")
-    public Map<String, Object> addGroup(@RequestParam("userid") String user_id,
-                                        @RequestParam("groupid") String group_id){
+    @PostMapping("/addgroup/{user_id}/{group_id}")
+    public Map<String, Object> addGroup(@PathVariable String user_id,
+                                        @PathVariable String group_id){
         Map<String, Object> result = new HashMap<>();
         try{
             Boolean aBoolean = relationService.addGroup(group_id, user_id);
@@ -62,7 +62,7 @@ public class RelationController {
     }
 
     @GetMapping("/friends/{userid}")
-    public Map<String, Object> getFriends(@RequestParam("userid") String userid){
+    public Map<String, Object> getFriends(@PathVariable String userid){
         Map<String, Object> result = new HashMap<>();
         try{
             List<User> users = relationService.showFriends(userid);
@@ -72,13 +72,13 @@ public class RelationController {
         }catch (Exception e){
             e.printStackTrace();
             result.put("code", "400");
-            result.put("msg", "群聊加载失败");
+            result.put("msg", "好友加载失败");
         }
         return result;
     }
 
     @GetMapping("group/{userid}")
-    public Map<String, Object> getGroup(@RequestParam("userid") String userid){
+    public Map<String, Object> getGroup(@PathVariable String userid){
         Map<String, Object> result = new HashMap<>();
         try{
             List<Group> groups = relationService.showGroups(userid);

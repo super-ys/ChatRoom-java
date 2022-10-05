@@ -6,9 +6,18 @@
 
 
     <select id="isFriend" parameterType="String" resultType="int">
-        select count(*) from relationship where user_id = #{userid} and friend_id = #{friend_id}
-        union all
-        select count(*) from relationship where user_id = #{friend_id} and friend_id = #{userid}
+        select SUM(num)
+        from (
+                 select count(*) as num
+                 from relationship
+                 where user_id = #{userid}
+                   and friend_id = #{friend_id}
+                 union all
+                 select count(*) as num
+                 from relationship
+                 where user_id = #{friend_id}
+                   and friend_id = #{userid}
+             ) as A
     </select>
 
     <select id="queryFriendsById" resultType="com.zys.websocketchatroom.pojo.User" parameterType="String">
@@ -22,21 +31,25 @@
 
 
     <insert id="insertFriend" parameterType="String">
-        insert into Relationship values(#userid, #friend_id)
+        insert into Relationship values(#{userid}, #{friend_id})
     </insert>
 
     <select id="queryGroupById" resultType="com.zys.websocketchatroom.pojo.Group" parameterType="String">
-        select g.group_id, g.group_name, g.group_head,g.group_count from `group` g where g.group_id in (
+        select g.group_id, g.group_name, g.group_head, g.group_owner,g.group_count from `group` g where g.group_id in (
             select group_id from groupship where user_id = #{userid}
             )
     </select>
 
-    <select id="queryMembers" resultType="list" parameterType="String">
+    <select id="queryMembers" resultType="java.lang.String" parameterType="String">
         select user_id from groupship where group_id = #{group_id}
     </select>
 
     <insert id="insertGroup" parameterType="String">
         insert into groupship values(#{groupid}, #{userid})
     </insert>
+
+    <update id="addCount" parameterType="String">
+        update `group` set  group_count = group_count + 1 where group_id = #{group_id};
+    </update>
 
 </mapper>

@@ -30,7 +30,11 @@ public class RelationServiceImpl implements RelationService{
     @Override
     public Boolean addGroup(String groupid, String userid) {
         int i = relationMapper.insertGroup(groupid, userid);
-        return i != 0 ? true : false;
+        int count = 0;
+        if(i != 0){
+            count = relationMapper.addCount(groupid);
+        }
+        return count != 0 ? true : false;
     }
 
     @Override

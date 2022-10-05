@@ -53,7 +53,7 @@ public class TextMessageServiceImpl implements TextMessageService{
      * @return
      */
     @Override
-    public Boolean addMessage(TextMessage message) {
+    public boolean addMessage(TextMessage message) {
         int insert = textMessageMapper.insert(message);
         return insert != 0 ? true : false;
     }

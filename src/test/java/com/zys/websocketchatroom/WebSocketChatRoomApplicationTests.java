@@ -8,6 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class WebSocketChatRoomApplicationTests {
@@ -33,5 +37,6 @@ class WebSocketChatRoomApplicationTests {
         int count = userMapper.count();
         System.out.println(count);
     }
+
 
 }

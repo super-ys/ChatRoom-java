@@ -4,13 +4,15 @@ package com.zys.websocketchatroom.websocket;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.zys.websocketchatroom.pojo.TextMessage;
 import com.zys.websocketchatroom.service.RelationService;
+import com.zys.websocketchatroom.service.RelationServiceImpl;
 import com.zys.websocketchatroom.service.TextMessageService;
+import com.zys.websocketchatroom.service.TextMessageServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -33,10 +35,12 @@ public class WebSocketServer {
     // 记录在线用户
     public static final Map<String, Session> onlineUsers = new ConcurrentHashMap<>();
 
-    @Autowired
-    private RelationService relationService;
-    @Autowired
-    private TextMessageService messageService;
+    private static ApplicationContext applicationContext;
+
+
+    public static void setApplicationContext(ApplicationContext applicationContext){
+        WebSocketServer.applicationContext = applicationContext;
+    }
     /**
      * 建立链接调用的方法
      * @param session
@@ -83,13 +87,16 @@ public class WebSocketServer {
         log.info("服务端收到用户username={}的消息：{}", username, message);
         JSONObject object = JSON.parseObject(message);
         if("true".equals(object.getString("isGroup"))){
-            String gruop_id = object.getString("to");
+            String group_id = object.getString("to");
+            log.info("群聊id为{}",group_id);
             //  TODO 查询表 Groupship, 查询出群成员
-            List<String> users = relationService.queryMembers(gruop_id);
+            RelationService relationService = applicationContext.getBean(RelationServiceImpl.class);
+            List<String> users = relationService.queryMembers(group_id);
             // 找到群 id 为 group_id 的所有成员
             List<Session> sessions = new ArrayList<>();
             for(String user : users){
-                sessions.add(onlineUsers.get(user));
+                if(onlineUsers.containsKey(user))
+                    sessions.add(onlineUsers.get(user));
             }
             log.info("进入群聊");
             // 发送群消息
@@ -106,6 +113,15 @@ public class WebSocketServer {
         try{
             log.info("服务端给客户端[{}]发送信息{}", session.getId(), message);
             session.getBasicRemote().sendText(message);
+            JSONObject object = JSON.parseObject(message);
+            object.remove("from_avatar");
+            TextMessage textMessage = JSONObject.toJavaObject(object, TextMessage.class);
+            try{
+                TextMessageService messageService = applicationContext.getBean(TextMessageServiceImpl.class);
+                boolean aBoolean = messageService.addMessage(textMessage);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }catch (Exception e){
             log.error("服务端发送消息给客户端失败", e);
         }
@@ -120,12 +136,14 @@ public class WebSocketServer {
                 synchronized (session){
                     log.info("服务端给客户端[{}]发送信息{}", session.getId(), message);
                     session.getBasicRemote().sendText(message);
-                    TextMessage textMessage = (TextMessage) JSON.parse(message);
-                    Boolean aBoolean = messageService.addMessage(textMessage);
-                    if(aBoolean){
-                        System.out.println("消息存储成功");
-                    }else{
-                        System.out.println("消息存储失败");
+                    JSONObject object = JSON.parseObject(message);
+                    object.remove("from_avatar");
+                    TextMessage textMessage = JSONObject.toJavaObject(object, TextMessage.class);
+                    try{
+                        TextMessageService messageService = applicationContext.getBean(TextMessageServiceImpl.class);
+                        boolean aBoolean = messageService.addMessage(textMessage);
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
                 }
             }catch (Exception e){

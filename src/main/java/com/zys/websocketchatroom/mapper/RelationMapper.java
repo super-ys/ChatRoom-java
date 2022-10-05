@@ -26,8 +26,13 @@ public interface RelationMapper {
     List<Group> queryGroupById(String userid);
 
     // 查询群成员
-    List queryMembers(String group_id);
+    List<String> queryMembers(String group_id);
+
+    // 更新群成员数量
+    int addCount(String group_id);
     // 添加群
     int insertGroup(String groupid, String userid);
+
+
 
 }

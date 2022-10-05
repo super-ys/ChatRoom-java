@@ -36,13 +36,19 @@ public class UserController {
     @PostMapping("/register")
     public Map<String, String> register(@RequestBody User user){
         System.out.println(user);
-        boolean register = userService.register(user);
-        Map<String, String> res = new HashMap();
+        User query = userService.query(user.userid);
         String code = "200";
         String msg = "注册成功";
-        if(!register){
-            code = "400";
-            msg = "注册失败，请稍后重试";
+        Map<String, String> res = new HashMap();
+        if(query != null){
+            code = "300";
+            msg = "该登录名已被占用，请更换";
+        }else{
+            boolean register = userService.register(user);
+            if(!register){
+                code = "400";
+                msg = "注册失败，请稍后重试";
+            }
         }
         res.put("code", code);
         res.put("msg", msg);
@@ -51,6 +57,7 @@ public class UserController {
 
     @GetMapping("/query/{userid}")
     public User query(@PathVariable String userid){
+
         return userService.query(userid);
     }
 }
