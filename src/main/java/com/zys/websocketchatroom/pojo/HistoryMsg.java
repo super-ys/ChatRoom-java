@@ -20,5 +20,5 @@ public class HistoryMsg {
     public String name;
     public String content;
     public Boolean isMe;
-    public Date create_time;
+    public String create_time;
 }

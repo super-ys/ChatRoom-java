@@ -93,4 +93,40 @@ public class RelationController {
         }
         return result;
     }
+
+    @GetMapping("add/query/{user_id}/{query_id}/{isGroup}")
+    public Map<String, Object> getQuery(@PathVariable String user_id, @PathVariable String query_id,
+                                        @PathVariable boolean isGroup){
+        System.out.println("user_id: " + user_id + " query_id: " + query_id + " isGroup: "+isGroup);
+        Map<String, Object> result = new HashMap<>();
+        try{
+            List<Map<String, Object>> maps = relationService.queryUserOrGroup(user_id, query_id, isGroup);
+            result.put("code", "200");
+            result.put("msg", "查寻成功");
+            result.put("data", maps);
+        }catch (Exception e){
+            result.put("code", "400");
+            result.put("msg", "查询失败");
+        }
+        return result;
+    }
+
+    @PostMapping("add/create")
+    public Map<String, Object> createGroup(@RequestBody Group group){
+        Map<String, Object> result = new HashMap<>();
+        try{
+            Boolean group1 = relationService.createGroup(group);
+            if(group1){
+                result.put("code", "200");
+                result.put("msg", "群聊创建成功");
+            }else{
+                result.put("code", "200");
+                result.put("msg", "群聊创建成功");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+
+        }
+        return result;
+    }
 }

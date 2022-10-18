@@ -27,7 +27,7 @@ function checkSocket(){
     }
 }
 
-function concent(){
+function conncent(){
     checkSocket();
     socket = new WebSocket(socketUrl);
     socket.onopen = () =>{console.log('WebSocket 已连接')}

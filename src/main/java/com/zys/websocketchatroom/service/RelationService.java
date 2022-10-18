@@ -5,6 +5,7 @@ import com.zys.websocketchatroom.pojo.Relationship;
 import com.zys.websocketchatroom.pojo.User;
 
 import java.util.List;
+import java.util.Map;
 
 public interface RelationService {
 
@@ -16,6 +17,9 @@ public interface RelationService {
     // 添加群
     Boolean addGroup(String groupid, String userid);
 
+    // 创建群聊
+    Boolean createGroup(Group group);
+
     // 列出好友列表
     List<User> showFriends(String userid);
 
@@ -24,4 +28,7 @@ public interface RelationService {
 
     // 查询群成员
     List<String> queryMembers(String group_id);
+
+    // 查询用户或群
+    List<Map<String, Object>> queryUserOrGroup(String user_id, String query_id, boolean isGroup);
 }

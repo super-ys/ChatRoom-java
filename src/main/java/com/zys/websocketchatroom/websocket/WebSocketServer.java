@@ -95,7 +95,7 @@ public class WebSocketServer {
             // 找到群 id 为 group_id 的所有成员
             List<Session> sessions = new ArrayList<>();
             for(String user : users){
-                if(onlineUsers.containsKey(user))
+                if(onlineUsers.containsKey(user) && !user.equals(username))
                     sessions.add(onlineUsers.get(user));
             }
             log.info("进入群聊");
@@ -111,13 +111,19 @@ public class WebSocketServer {
     // 给单个用户发送信息
     private void unicast(String message, Session session) {
         try{
-            log.info("服务端给客户端[{}]发送信息{}", session.getId(), message);
-            session.getBasicRemote().sendText(message);
+            if(session != null){
+                log.info("服务端给客户端[{}]发送信息{}", session.getId(), message);
+                session.getBasicRemote().sendText(message);
+
+            }
             JSONObject object = JSON.parseObject(message);
             object.remove("from_avatar");
+            object.remove("name");
             TextMessage textMessage = JSONObject.toJavaObject(object, TextMessage.class);
+            System.out.println(textMessage);
             try{
                 TextMessageService messageService = applicationContext.getBean(TextMessageServiceImpl.class);
+                System.out.println(messageService);
                 boolean aBoolean = messageService.addMessage(textMessage);
             }catch (Exception e){
                 e.printStackTrace();
@@ -131,20 +137,13 @@ public class WebSocketServer {
 
     // 组播
     private void multicast(String message, List<Session> sessions){
+
         for(Session session : sessions){
             try{
                 synchronized (session){
                     log.info("服务端给客户端[{}]发送信息{}", session.getId(), message);
                     session.getBasicRemote().sendText(message);
-                    JSONObject object = JSON.parseObject(message);
-                    object.remove("from_avatar");
-                    TextMessage textMessage = JSONObject.toJavaObject(object, TextMessage.class);
-                    try{
-                        TextMessageService messageService = applicationContext.getBean(TextMessageServiceImpl.class);
-                        boolean aBoolean = messageService.addMessage(textMessage);
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
+
                 }
             }catch (Exception e){
                 log.info("发送组播失败");
@@ -152,8 +151,17 @@ public class WebSocketServer {
             }
         }
 
-        // TODO 存储信息
-
+        //  存储信息
+        JSONObject object = JSON.parseObject(message);
+        object.remove("from_avatar");
+        object.remove("name");
+        TextMessage textMessage = JSONObject.toJavaObject(object, TextMessage.class);
+        try{
+            TextMessageService messageService = applicationContext.getBean(TextMessageServiceImpl.class);
+            boolean aBoolean = messageService.addMessage(textMessage);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 

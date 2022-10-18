@@ -19,5 +19,5 @@ public class TextMessage {
     public String content;
     public String type;
     public Boolean isgroup;
-    public Date create_time;
+    public String create_time;
 }

@@ -17,15 +17,21 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestParam("userid") String userid,
-                      @RequestParam("password") String password){
+    public Map<String, Object> login(@RequestBody Map<String, String > map){
+        String userid = map.get("userid");
+        String password = map.get("password");
         Map<String, Object> result = new HashMap<>();
         System.out.println(userid+ "----" + password);
         try{
             User user = userService.login(userid, password);
-            result.put("code", "200");
-            result.put("msg", "登录成功");
-            result.put("data", user);
+            if(user == null){
+                result.put("code", "400");
+                result.put("msg", "登录密码不正确");
+            }else{
+                result.put("code", "200");
+                result.put("msg", "登录成功");
+                result.put("data", user);
+            }
         }catch (Exception e){
             result.put("code", "400");
             result.put("msg", "登录失败");
@@ -36,19 +42,26 @@ public class UserController {
     @PostMapping("/register")
     public Map<String, String> register(@RequestBody User user){
         System.out.println(user);
-        User query = userService.query(user.userid);
         String code = "200";
         String msg = "注册成功";
         Map<String, String> res = new HashMap();
-        if(query != null){
-            code = "300";
-            msg = "该登录名已被占用，请更换";
-        }else{
-            boolean register = userService.register(user);
-            if(!register){
-                code = "400";
-                msg = "注册失败，请稍后重试";
+        try {
+            User query = userService.query(user.userid);
+
+            if (query != null) {
+                code = "300";
+                msg = "该登录名已被占用，请更换";
+            } else {
+                boolean register = userService.register(user);
+                if (!register) {
+                    code = "400";
+                    msg = "注册失败，请稍后重试";
+                }
             }
+        }catch (Exception e){
+            e.printStackTrace();
+            code = "400";
+            msg = "注册失败，请稍后重试";
         }
         res.put("code", code);
         res.put("msg", msg);

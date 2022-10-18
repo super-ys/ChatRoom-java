@@ -48,7 +48,33 @@ userid
 }
 ```
 
-**接口四：添加好友**
+**接口四：模糊查询用户与群聊**
+
+```
+地址
+http://localhost:8080/relation/add/query/{user_id}/{query_id}/{isGroup}
+请求方式
+get
+路径参数
+user_id、query_id、isGroup
+返回数据
+{
+    "msg": "查寻成功",
+    "code": "200",
+    "data": [
+        {
+            "name": "jack",
+            "id": "11111",
+            "avatar": "/others/jack.jpg",
+            "isAdd": 1
+        }
+    ]
+}
+```
+
+
+
+**接口五：添加好友**
 
 ```
 地址
@@ -64,7 +90,7 @@ userid、friendid
 }
 ```
 
-**接口五：添加群**
+**接口六：添加群**
 
 ```
 地址
@@ -80,7 +106,7 @@ user_id、group_id
 }
 ```
 
-**接口六：获取好友列表**
+**接口七：获取好友列表**
 
 ```
 地址
@@ -105,7 +131,7 @@ userid
 }
 ```
 
-**接口七：获取群聊列表**
+**接口八：获取群聊列表**
 
 ```
 地址
@@ -122,20 +148,22 @@ userid
         {
             "group_id": "33333",
             "group_name": "相亲相爱一家人",
-            "gruop_head": null,
+            "group_head": null,
             "group_owner": null
         },
         {
             "group_id": "44444",
             "group_name": "麻豆工作室",
-            "gruop_head": null,
+            "group_head": null,
             "group_owner": null
         }
     ]
 }
 ```
 
-**接口八：获取好友历史消息**
+
+
+**接口九：获取好友历史消息**
 
 ```
 地址
@@ -161,7 +189,7 @@ userid、friend_id
 }
 ```
 
-**接口九：获取群聊历史消息**
+**接口十：获取群聊历史消息**
 
 ```
 地址
@@ -195,7 +223,7 @@ group_id、user_id
 }
 ```
 
-**接口十：websocket接口，单聊与群聊**
+**接口十一：websocket接口，单聊与群聊**
 
 ```
 地址

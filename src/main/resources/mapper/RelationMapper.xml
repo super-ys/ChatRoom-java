@@ -20,6 +20,10 @@
              ) as A
     </select>
 
+    <select id="isGroupship" parameterType="String" resultType="int">
+        select count(*) from groupship where user_id = #{userid} and group_id = #{group_id}
+    </select>
+
     <select id="queryFriendsById" resultType="com.zys.websocketchatroom.pojo.User" parameterType="String">
 
         select u.userid, u.username, u.avatar from user u where u.userid in (
@@ -51,5 +55,27 @@
     <update id="addCount" parameterType="String">
         update `group` set  group_count = group_count + 1 where group_id = #{group_id};
     </update>
+
+    <select id="queryUser" parameterType="String" resultType="com.zys.websocketchatroom.pojo.User">
+        select
+         userid, username, avatar
+        from
+             `user`
+        where
+              userid like concat('%','${user_id}','%')
+    </select>
+
+    <select id="queryGroup" parameterType="String" resultType="com.zys.websocketchatroom.pojo.Group">
+        select
+               group_id, group_name, group_head
+        from
+             `group`
+        where
+              group_id like concat('%', '${group_id}', '%')
+    </select>
+
+    <insert id="createGroup" parameterType="com.zys.websocketchatroom.pojo.Group">
+        insert into `group` values(#{group_id}, #{group_name}, #{group_head}, #{group_owner}, 0)
+    </insert>
 
 </mapper>

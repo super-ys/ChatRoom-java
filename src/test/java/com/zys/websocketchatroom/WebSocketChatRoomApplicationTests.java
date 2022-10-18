@@ -8,10 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class WebSocketChatRoomApplicationTests {
@@ -38,5 +35,26 @@ class WebSocketChatRoomApplicationTests {
         System.out.println(count);
     }
 
+    public int scoreOfParentheses(String s) {
+        int ans = 0;
 
+        StringBuilder sb = new StringBuilder(s);
+        int i = 0;
+        while (sb.length() != 0){
+            int num = 1;
+            int up = -1;
+            while (sb.charAt(i) == '('){
+                i ++;
+                up ++;
+            }
+            while (sb.charAt(i) == ')'){
+                num = (int)Math.pow(2, up) * num;
+                sb.delete(i -1, i+ 1);
+                i --;
+            }
+            ans += num;
+        }
+
+        return ans;
+    }
 }

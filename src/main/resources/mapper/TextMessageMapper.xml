@@ -6,13 +6,23 @@
 
 
     <select id="getFriendMessage" resultType="com.zys.websocketchatroom.pojo.TextMessage" parameterType="String">
-        select * from textmessage where `from` = #{idone} and `to` = #{idtwo}
-        union all
-        select * from textmessage where `from` = #{idtwo} and `to` = #{idone}
+        select *
+        from (
+                 select *
+                 from textmessage
+                 where `from` = #{idone}
+                   and `to` = #{idtwo}
+                 union all
+                 select *
+                 from textmessage
+                 where `from` = #{idtwo}
+                   and `to` = #{idone}
+             ) C
+            order by C.create_time asc
     </select>
 
     <select id="getGroupMessage" resultType="com.zys.websocketchatroom.pojo.TextMessage" parameterType="String">
-        select * from textmessage where `to` = #{groupid}
+        select * from textmessage where `to` = #{groupid} order by create_time asc
     </select>
 
     <insert id="insert"  parameterType="com.zys.websocketchatroom.pojo.TextMessage">
