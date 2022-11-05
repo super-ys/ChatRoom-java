@@ -4,8 +4,12 @@ package com.zys.websocketchatroom.controller;
 import com.zys.websocketchatroom.pojo.User;
 import com.zys.websocketchatroom.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.server.Session;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +21,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody Map<String, String > map){
+    public Map<String, Object> login(@RequestBody Map<String, String > map, HttpSession session){
         String userid = map.get("userid");
         String password = map.get("password");
         Map<String, Object> result = new HashMap<>();
@@ -31,6 +35,8 @@ public class UserController {
                 result.put("code", "200");
                 result.put("msg", "登录成功");
                 result.put("data", user);
+                String text = userid + "" + password;
+                result.put("token", DigestUtils.md5DigestAsHex(text.getBytes("utf-8")));
             }
         }catch (Exception e){
             result.put("code", "400");
